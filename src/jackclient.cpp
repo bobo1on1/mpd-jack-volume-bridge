@@ -153,6 +153,7 @@ int CJackClient::SJackProcessCallback(jack_nframes_t nframes, void *arg)
 int CJackClient::PJackProcessCallback(jack_nframes_t nframes)
 {
   float volume = m_mpdclient.Volume();
+  volume = volume * volume * volume; //scale the volume from linear
 
   int startsample = 0;
   if (volume != m_prevvolume)
