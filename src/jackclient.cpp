@@ -20,6 +20,7 @@
 #include <cstring>
 #include <thread>
 #include <algorithm>
+#include <cmath>
 
 CJackClient::CJackClient(CMpdClient& mpdclient) : m_mpdclient(mpdclient)
 {
@@ -152,8 +153,10 @@ int CJackClient::SJackProcessCallback(jack_nframes_t nframes, void *arg)
 
 int CJackClient::PJackProcessCallback(jack_nframes_t nframes)
 {
+  //scale the volume the same way that mpd does
   float volume = m_mpdclient.Volume();
-  volume = volume * volume * volume; //scale the volume from linear
+  volume = (expf(volume * 4.0f) - 1.0f) / (54.5981500331f - 1.0f);
+  volume = std::min(1.0f, std::max(0.0f, volume));
 
   int startsample = 0;
   if (volume != m_prevvolume)
